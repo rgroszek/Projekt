@@ -18,8 +18,7 @@ var rooms = ['lobby','dzienny','nocny'];
 io.sockets.on('connection', function (socket) {
 
   socket.on('addroom', function(wartosc){
-    socket.wartosc = wartosc;
-    rooms[wartosc] = wartosc;
+    rooms.push(wartosc);
     socket.emit('updaterooms', rooms, 'wartosc');
   });
   

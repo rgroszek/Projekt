@@ -9,6 +9,22 @@
 
   var socket = io.connect('http://localhost:8080');
 
+   
+  var emoticons = {
+
+    //smile: '<img src="emotikonki/smile.gif" />',
+    smile: '<img src="emotikonki/smiley.gif" alt="Smiley face" />',
+    sad: '<img src="emotikonki/sad.gif" />',
+    wink: '<img src="emotikonki/wink.gif" />'
+  };
+  var patterns = {
+    smile: /:-\)/gm,
+    sad: /:-\(/gm,
+    wink: /;-\)/gm
+  };
+
+
+
   function oknoPrompt() {
     var nick = prompt('Podaj swój nick:', 'Anonim');
         if (nick != null) {
@@ -29,6 +45,16 @@
 
   socket.on('updatechat', function (username, data) {
     $('#rozmowa').append('<b>'+username + ':</b> ' + data + '<br>');
+
+     //wstawienie emotikonek
+    /*
+    $("#rozmowa b").each(function(){
+      var #rozmowa = $(this);
+      var html = #rozmowa.html();
+
+
+      $(this).html(html.replace(patterns.smile, emoticons.smile).replace(patterns.sad, emoticons.sad).replace(patterns.wink, emoticons.wink));
+      */
   });
 
   socket.on('updateusers', function(data) {
@@ -56,15 +82,11 @@
     socket.emit('switchRoom', room);
   }
 
-
-
-  
   $(function(){
     
     $('#datasend').click( function() {
       var message = $('#data').val();
       $('#data').val('');
-    
       socket.emit('sendchat', message);
     });
 
@@ -72,7 +94,6 @@
     $('#dodaj_pokoj').click(function(){
       var wartosc = $('input[id=pokoj]').val();
       socket.emit('addroom', wartosc);
-      //socket.emit('updaterooms', rooms, wartosc);
       return wartosc;
     });
 
@@ -108,6 +129,7 @@
     </div>
     <div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
       <div id="rozmowa"></div>
+      <img src="emotikonki/smile.png" height="42" width="42"/>
       <input id="data" style="width:200px;" />
       <input type="button" id="datasend" value="send" />
       <input type="button" id="wyjdz" value="wyjdz" />
