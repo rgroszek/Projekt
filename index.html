@@ -9,21 +9,16 @@
 
   var socket = io.connect('http://localhost:8080');
 
-   
-  var emoticons = {
-
-    //smile: '<img src="emotikonki/smile.gif" />',
-    smile: '<img src="emotikonki/smiley.gif" alt="Smiley face" />',
-    sad: '<img src="emotikonki/sad.gif" />',
-    wink: '<img src="emotikonki/wink.gif" />'
+  var emotikonki = {
+    smile1: ':-)',
+    smile2: ':)',
+    sad1: ':-(',
+    sad2: ':(',
+    wink1: ';-)',
+    wink2: ';)',
+    scared1: ':-o',
+    scared2: ':o'    
   };
-  var patterns = {
-    smile: /:-\)/gm,
-    sad: /:-\(/gm,
-    wink: /;-\)/gm
-  };
-
-
 
   function oknoPrompt() {
     var nick = prompt('Podaj swój nick:', 'Anonim');
@@ -46,15 +41,11 @@
   socket.on('updatechat', function (username, data) {
     $('#rozmowa').append('<b>'+username + ':</b> ' + data + '<br>');
 
-     //wstawienie emotikonek
-    /*
-    $("#rozmowa b").each(function(){
-      var #rozmowa = $(this);
-      var html = #rozmowa.html();
+     //wstawianie emotikonek
+        var zamiana = $("#rozmowa").html().replace(emotikonki.smile1,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-smile.svg" width="30" height="30" border="0"/>').replace(emotikonki.smile2,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-smile.svg" width="30" height="30" border="0"/>').replace(emotikonki.sad1,'<img src="http://upload.wikimedia.org/wikipedia/commons/0/06/Face-sad.svg" width="30" height="30" border="0"/>').replace(emotikonki.sad2,'<img src="http://upload.wikimedia.org/wikipedia/commons/0/06/Face-sad.svg" width="30" height="30" border="0"/>').replace(emotikonki.scared1,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-surprise.svg" width="30" height="30" border="0"/>').replace(emotikonki.scared2,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-surprise.svg" width="30" height="30" border="0"/>').replace(emotikonki.wink1,'<img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="30" height="30" border="0"/>').replace(emotikonki.wink2,'<img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="30" height="30" border="0"/>');
 
+        $("#rozmowa").html(zamiana);
 
-      $(this).html(html.replace(patterns.smile, emoticons.smile).replace(patterns.sad, emoticons.sad).replace(patterns.wink, emoticons.wink));
-      */
   });
 
   socket.on('updateusers', function(data) {
@@ -63,7 +54,6 @@
       $('#users').append('<div>' + key + '</div>');
     });
   });
-
 
   socket.on('updaterooms', function(rooms, current_room) {
     $('#rooms').empty();
@@ -88,8 +78,8 @@
       var message = $('#data').val();
       $('#data').val('');
       socket.emit('sendchat', message);
+      $('#data').focus();
     });
-
 
     $('#dodaj_pokoj').click(function(){
       var wartosc = $('input[id=pokoj]').val();
@@ -100,10 +90,6 @@
     $('#wyjdz').click( function() {
       socket.disconnect();
       location.reload();
-      //var message = $('#data').val();
-      //$('#data').val('');
-      // tell server to execute 'sendchat' and send along one parameter
-      //socket.emit('sendchat', message);
     });
 
     $('#data').keypress(function(e) {
@@ -133,6 +119,7 @@
       <input id="data" style="width:200px;" />
       <input type="button" id="datasend" value="send" />
       <input type="button" id="wyjdz" value="wyjdz" />
+      <img src="smile.gif"/>
     </div>
   </body>
 </html>
