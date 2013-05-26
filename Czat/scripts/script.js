@@ -1,13 +1,5 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Wielopokojowy czat</title>
-     <script src="/socket.io/socket.io.js"></script>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-      <script>
 
-  var socket = io.connect('http://localhost:8080');
+  var socket = io.connect('http://localhost:1234');
 
   var emotikonki = {
     smile1: ':-)',
@@ -66,6 +58,8 @@
         $('#rooms').append('<div><input type="button" id=\''+value+'\' + value="usuń" /></div>');
       }
     });
+    $('#aktualny_pokoj').empty();
+    $('#aktualny_pokoj').html("Jesteś aktualnie w " + current_room + ".");
   });
 
   function switchRoom(room){
@@ -74,6 +68,8 @@
 
   $(function(){
     
+    
+
     $('#datasend').click( function() {
       var message = $('#data').val();
       $('#data').val('');
@@ -84,7 +80,7 @@
     $('#dodaj_pokoj').click(function(){
       var wartosc = $('input[id=pokoj]').val();
       socket.emit('addroom', wartosc);
-      return wartosc;
+      //return wartosc;
     });
 
     $('#wyjdz').click( function() {
@@ -99,29 +95,3 @@
       }
     });
   });
-</script>
-  </head>
-  <body>
-   
-    <div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
-      <b>Zalogowani użytkownicy:</b>
-      <div id="users"></div>
-    </div>
-    <div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
-      <b>Pokoje:</b>
-      <input id="pokoj" style="width:70px;" />
-      <input type="button" id="dodaj_pokoj" value="Dodaj" />
-      <div id="rooms"></div>
-    </div>
-    <div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
-      <div id="rozmowa"></div>
-      <img src="emotikonki/smile.png" height="42" width="42"/>
-      <input id="data" style="width:200px;" />
-      <input type="button" id="datasend" value="send" />
-      <input type="button" id="wyjdz" value="wyjdz" />
-      <img src="smile.gif"/>
-    </div>
-  </body>
-</html>
-
-

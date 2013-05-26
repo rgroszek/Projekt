@@ -4,12 +4,17 @@ var express = require('express')
   , server = http.createServer(app)
   , io = require('socket.io').listen(server);
 
-server.listen(8080);
-
+app.get('/scripts/:url[.js]', function (req, res) {
+    res.sendfile(__dirname + req.url);
+});
+app.get('/style/:url[.css]', function (req, res) {    
+    res.sendfile(__dirname + req.url);
+});
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
+server.listen(1234);
 // nazwy uzytkownikow 
 var usernames = {};
 //pokoje
@@ -19,7 +24,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('addroom', function(wartosc){
     rooms.push(wartosc);
-    socket.emit('updaterooms', rooms, 'wartosc');
+    socket.emit('updaterooms', rooms, wartosc);
   });
   
   socket.on('adduser', function(username){
@@ -30,7 +35,7 @@ io.sockets.on('connection', function (socket) {
     socket.emit('updatechat', 'SERVER', 'dołączyłeś/aś.');
     socket.broadcast.to("lobby").emit('updatechat', 'SERVER', username + ' dołączył/a.');
     io.sockets.emit('updateusers', usernames);
-    socket.emit('updaterooms', rooms, 'room1');
+    socket.emit('updaterooms', rooms, 'lobby');
   });
 
   socket.on('sendchat', function (data) {
@@ -46,7 +51,6 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' dołączył/a do tego stołu');
     socket.emit('updaterooms', rooms, newroom);
   });
-
 
   socket.on('disconnect', function(){
     delete usernames[socket.username];

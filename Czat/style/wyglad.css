@@ -1,0 +1,31 @@
+body{
+	color: white;
+	background-image:url('http://www.wallpaperpin.com/webdisk/dark-blue-background-backgrounds-wallpapers.jpg');
+  	-webkit-background-size: cover;
+  	-moz-background-size: cover;
+  	-o-background-size: cover;
+  	background-size: cover;
+  	background-repeat:x;
+  	background-repeat:y;
+}
+div#pokoje{
+	float:left;width:100px;
+	border-right:1px solid black;
+	height:300px;padding:10px;
+	overflow:scroll-y;
+}
+div#czatowanie{
+	float:left;
+	width:300px;
+	height:250px;
+	overflow:scroll-y;
+	padding:10px;
+}
+div#zalogowani{
+	float:left;
+	width:100px;
+	height:300px;
+	border-right:1px solid black;
+	padding:10px;
+	overflow:scroll-y;
+}

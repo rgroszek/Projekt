@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Wielopokojowy czat</title>
+    <link rel="stylesheet" href="style/wyglad.css" type="text/css"/>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script type="text/javascript" src="scripts/script.js"></script>  
+  </head>
+  <body>
+   <div id="aktualny_pokoj"></div>
+    <div id="zalogowani">
+      <b>Zalogowani użytkownicy:</b>
+      <div id="users"></div>
+    </div>
+    <div id="pokoje">
+      <b>Pokoje:</b>
+      <input id="pokoj" style="width:70px;" />
+      <input type="button" id="dodaj_pokoj" value="Dodaj" />
+      <div id="rooms"></div>
+    </div>
+    <div id="czatowanie">
+      <div id="rozmowa"></div>
+      <input id="data" style="width:200px;" />
+      <input type="button" id="datasend" value="send" />
+      <input type="button" id="wyjdz" value="wyjdz" />
+    </div>
+  </body>
+</html>
+
+
