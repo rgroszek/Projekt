@@ -6,12 +6,41 @@
     <link rel="stylesheet" href="style/wyglad.css" type="text/css"/>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script type="text/javascript" src="scripts/script.js"></script>  
+    <script type="text/javascript" src="scripts/script.js"></script> 
+    <script type="text/javascript">
+    /*
+      function encrypt(text){
+        var cipher = crypto.createCipher('aes-256-cbc','d6F3Efeq')
+        var crypted = cipher.update(text,'utf8','hex')
+        crypted += cipher.final('hex');
+        return crypted;
+      }
+ 
+      function decrypt(text){
+        var decipher = crypto.createDecipher('aes-256-cbc','d6F3Efeq')
+        var dec = decipher.update(text,'hex','utf8')
+        dec += decipher.final('utf8');
+        return dec;
+      }
+      var hw = encrypt("hello world")
+      decrypt(hw)
+      */
+      tick.on('error', function (reason){
+        console.error('Unable to connect Socket.IO', reason);
+      });
+ 
+      tick.on('connect', function (){
+        console.info('successfully established a working and authorized connection');
+      });
+
+    </script> 
   </head>
   <body>
    <div id="aktualny_pokoj"></div>
     <div id="zalogowani">
       <b>Zalogowani użytkownicy:</b>
+      <input id="zaproszenie" style="width:70px;" />
+      <input type="button" id="przycisk_zaproszenie" value="Zaproś" />
       <div id="users"></div>
     </div>
     <div id="pokoje">

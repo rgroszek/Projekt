@@ -22,6 +22,24 @@
         }
         return nick;
     }
+    /*
+    //pozyskanie dokładnej daty
+    function DokładnaData() {
+      var date = new Date();
+      var hour = date.getHours();
+      hour = (hour < 10 ? "0" : "") + hour;
+      var min  = date.getMinutes();
+      min = (min < 10 ? "0" : "") + min;
+      var sec  = date.getSeconds();
+      sec = (sec < 10 ? "0" : "") + sec;
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      month = (month < 10 ? "0" : "") + month;
+      var day  = date.getDate();
+      day = (day < 10 ? "0" : "") + day;
+      return year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
+    }
+    */
 
   socket.on('connect', function(){
     socket.emit('adduser', 
@@ -31,7 +49,10 @@
   });
 
   socket.on('updatechat', function (username, data) {
-    $('#rozmowa').append('<b>'+username + ':</b> ' + data + '<br>');
+    var godzina = new Date().getHours();
+    var minuta = new Date().getMinutes();
+    var sekunda = new Date().getSeconds();
+    $('#rozmowa').append('<b>'+'&nbsp'+username+':</b>'+'&nbsp'+data+"&nbsp &nbsp &nbsp &nbsp"+godzina+':'+minuta+':'+sekunda+'<br>');
 
      //wstawianie emotikonek
         var zamiana = $("#rozmowa").html().replace(emotikonki.smile1,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-smile.svg" width="30" height="30" border="0"/>').replace(emotikonki.smile2,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-smile.svg" width="30" height="30" border="0"/>').replace(emotikonki.sad1,'<img src="http://upload.wikimedia.org/wikipedia/commons/0/06/Face-sad.svg" width="30" height="30" border="0"/>').replace(emotikonki.sad2,'<img src="http://upload.wikimedia.org/wikipedia/commons/0/06/Face-sad.svg" width="30" height="30" border="0"/>').replace(emotikonki.scared1,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-surprise.svg" width="30" height="30" border="0"/>').replace(emotikonki.scared2,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-surprise.svg" width="30" height="30" border="0"/>').replace(emotikonki.wink1,'<img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="30" height="30" border="0"/>').replace(emotikonki.wink2,'<img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="30" height="30" border="0"/>');
@@ -43,7 +64,8 @@
   socket.on('updateusers', function(data) {
     $('#users').empty();
     $.each(data, function(key, value) {
-      $('#users').append('<div>' + key + '</div>');
+      //$('#users').append('<div>' + key + '</div>');
+      $('#users').append('<div><a href="#" onclick="zapros(\''+key+'\')"> ' + key + ' </a></div>');
     });
   });
 
@@ -80,6 +102,14 @@
     $('#dodaj_pokoj').click(function(){
       var wartosc = $('input[id=pokoj]').val();
       socket.emit('addroom', wartosc);
+      //return wartosc;
+    });
+
+    $('#przycisk_zaproszenie').click(function(){
+      var zaproszony = $('input[id=zaproszenie]').val();
+      socket.emit('zapros', zaproszony);
+      
+      //socket.emit('addroom', wartosc);
       //return wartosc;
     });
 
