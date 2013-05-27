@@ -53,7 +53,25 @@ io.set('authorization', function (handshakeData, accept) {
     accept(null, true);
 }); 
 //KONIEC AUTORYZACJI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+function Encrypt(dane){
+  var actual = dane;
+  var key = 10; //Any integer value
+  var result = "";
+  for(i=0; i<actual.length;i++){
+    result += String.fromCharCode(key^actual.charCodeAt(i));
+  }
+  //alert(result);
+  return result;
+}
+function Decrypt(dane){
+  var actual= dane;
+  var key = 10; //Any integer value
+  var result="";    
+  for(i=0; i<actual.length; i++){
+    result += String.fromCharCode(key^actual.charCodeAt(i));
+  }
+  return result;
+}
 // nazwy uzytkownikow 
 var usernames = {};
 //pokoje
@@ -63,7 +81,8 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('addroom', function(wartosc){
     rooms.push(wartosc);
-    socket.emit('updaterooms', rooms, wartosc);
+    socket.username = username;
+    socket.emit('updaterooms', rooms, wartosc, username);
   });
 
   socket.on('zapros', function(zaproszony){
@@ -78,10 +97,10 @@ io.sockets.on('connection', function (socket) {
     socket.room = 'lobby';
     usernames[username] = username;
     socket.join('lobby');
-    socket.emit('updatechat', 'SERVER', 'dołączyłeś/aś.');
-    socket.broadcast.to("lobby").emit('updatechat', 'SERVER', username + ' dołączył/a.');
+    socket.emit('updatechat', 'SERVER', Encrypt(' dołączyłeś/aś.'));
+    socket.broadcast.to("lobby").emit('updatechat', 'SERVER', Encrypt(username) + Encrypt(' dołączył/a.'));
     io.sockets.emit('updateusers', usernames);
-    socket.emit('updaterooms', rooms, 'lobby');
+    socket.emit('updaterooms', rooms, 'lobby', username);
   });
 
   socket.on('sendchat', function (data) {
@@ -91,17 +110,17 @@ io.sockets.on('connection', function (socket) {
   socket.on('switchRoom', function(newroom){
     socket.leave(socket.room);
     socket.join(newroom);
-    socket.emit('updatechat', 'SERVER', 'dolaczyles do '+ newroom);
-    socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' opuscil pokoj');
+    socket.emit('updatechat', 'SERVER', Encrypt('dolaczyles do ')+ Encrypt(newroom));
+    socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', Encrypt(socket.username) + Encrypt(' opuscil pokoj'));
     socket.room = newroom;
-    socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' dołączył/a do tego stołu');
-    socket.emit('updaterooms', rooms, newroom);
+    socket.broadcast.to(newroom).emit('updatechat', 'SERVER', Encrypt(socket.username)+Encrypt(' dołączył/a do tego stołu'));
+    socket.emit('updaterooms', rooms, newroom, socket.username);
   });
 
   socket.on('disconnect', function(){
-    delete usernames[socket.username];
     io.sockets.emit('updateusers', usernames);
-    socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' rozłączył/a się.');
+    socket.broadcast.emit('updatechat', 'SERVER', Encrypt(socket.username) + Encrypt(' rozłączył/a się.'));
     socket.leave(socket.room);
+    delete usernames[socket.username];
   });
 });

@@ -12,12 +12,14 @@
     scared2: ':o'    
   };
 
+
+
   function oknoPrompt() {
     var nick = prompt('Podaj swój nick:', 'Anonim');
         if (nick != null) {
             //alert('Witaj ' + nick);
         } else {
-            location.reload();
+            //location.reload();
             //alert('Anulowałeś akcję');
         }
         return nick;
@@ -52,13 +54,13 @@
     var godzina = new Date().getHours();
     var minuta = new Date().getMinutes();
     var sekunda = new Date().getSeconds();
-    $('#rozmowa').append('<b>'+'&nbsp'+username+':</b>'+'&nbsp'+data+"&nbsp &nbsp &nbsp &nbsp"+godzina+':'+minuta+':'+sekunda+'<br>');
+    var odszyfrowane = Decrypt(data);
+    $('#rozmowa').append('<b>'+'&nbsp'+username+':</b>'+'&nbsp'+odszyfrowane+"&nbsp &nbsp &nbsp &nbsp"+godzina+':'+minuta+':'+sekunda+'<br>');
 
      //wstawianie emotikonek
         var zamiana = $("#rozmowa").html().replace(emotikonki.smile1,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-smile.svg" width="30" height="30" border="0"/>').replace(emotikonki.smile2,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-smile.svg" width="30" height="30" border="0"/>').replace(emotikonki.sad1,'<img src="http://upload.wikimedia.org/wikipedia/commons/0/06/Face-sad.svg" width="30" height="30" border="0"/>').replace(emotikonki.sad2,'<img src="http://upload.wikimedia.org/wikipedia/commons/0/06/Face-sad.svg" width="30" height="30" border="0"/>').replace(emotikonki.scared1,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-surprise.svg" width="30" height="30" border="0"/>').replace(emotikonki.scared2,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-surprise.svg" width="30" height="30" border="0"/>').replace(emotikonki.wink1,'<img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="30" height="30" border="0"/>').replace(emotikonki.wink2,'<img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="30" height="30" border="0"/>');
 
         $("#rozmowa").html(zamiana);
-
   });
 
   socket.on('updateusers', function(data) {
@@ -69,7 +71,7 @@
     });
   });
 
-  socket.on('updaterooms', function(rooms, current_room) {
+  socket.on('updaterooms', function(rooms, current_room, username) {
     $('#rooms').empty();
     $.each(rooms, function(key, value) {
       if(value == current_room){
@@ -81,7 +83,7 @@
       }
     });
     $('#aktualny_pokoj').empty();
-    $('#aktualny_pokoj').html("Jesteś aktualnie w " + current_room + ".");
+    $('#aktualny_pokoj').html("Twój nick :&nbsp"+ username+" &nbsp jesteś aktualnie w :&nbsp"+"(" + current_room + ")");
   });
 
   function switchRoom(room){
@@ -90,12 +92,16 @@
 
   $(function(){
     
-    
-
     $('#datasend').click( function() {
+      /*
       var message = $('#data').val();
       $('#data').val('');
       socket.emit('sendchat', message);
+      $('#data').focus();
+      */
+      var message = $('#data').val();
+      $('#data').val('');
+      socket.emit('sendchat', Encrypt(message));
       $('#data').focus();
     });
 
