@@ -22,9 +22,6 @@ httpapp.get('*',function(req,res){
 server.listen(1234);
 http.listen(12345);
 
-//klucze prywatne i publiczne !!! zabezpieczenie klucza prywatnego
-
-
 // Configure Express app with:
 // * Cookie parser
 // * Session manage
@@ -42,8 +39,6 @@ app.get('/style/:url[.css]', function (req, res) {
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
-
-
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! HTTPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 /*
@@ -123,21 +118,38 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('zapros', function(zaproszony){
-    //io.of('zaproszony').sockets[handshakeData.socketID].emit("ZAPRASZAMY DO STOŁU");
-    console.log("zaproszono" + zaproszony + ".");
-    console.log("session ID zaproszonego "+ zaproszony.socket.handshake.sessionID + ".");
-    console.log("moje session ID"+ this.socket.handshake.sessionID + ".");
+    // socket = io.listen(port_number);
+    var ID_zaproszonego = usernames[zaproszony+"ID"];
+    //server.sockets.socket(ID_zaproszonego).emit("ZAPRASZAMY",ID_zaproszonego);
+      //io.of(zaproszony).sockets[ID_zaproszonego].emit('updatechat', socket.username, " zaprasza do swojego stołu.");
+    //io.clients[ID_zaproszonego].send('updatechat', "!!!!!!", " zaprasza do swojego stołu.");
+    io.sockets.socket(ID_zaproszonego).emit('updatechat', socket.username , " zaprasza Cię do pokoju: " + socket.room);
+    //console.log("zaproszono" + zaproszony + ".");
+    //console.log("session ID zaproszonego "+ usernames[zaproszony+"ID"] + ".");
+    //console.log("moje session ID"+ this.socket.handshake.sessionID + ".");
   });
   
   socket.on('adduser', function(username){
-    socket.username = username;
-    socket.room = 'lobby';
-    usernames[username] = username;
-    socket.join('lobby');
-    socket.emit('updatechat', 'SERVER', ' dołączyłeś/aś.');
-    socket.broadcast.to("lobby").emit('updatechat', 'SERVER', username + ' dołączył/a.');
-    io.sockets.emit('updateusers', usernames);
-    socket.emit('updaterooms', rooms, 'lobby', username);
+      for(var i=0;i<usernames.length;++i)
+      {
+        if(usernames[i] == username){
+          console.log("JUŻ INSTNIEJE!!!!!!!!!!!!!!!!!!");
+        }
+        else{
+          console.log("GIT");
+        }
+      }
+      socket.username = username;
+      clientid = socket.id;
+      socket.room = 'lobby';
+      usernames[username] = username;
+      usernames[username+"ID"] = clientid;
+      //console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + usernames+ "!!!!!!!!!!!!!!!!!!!!!!!");
+      socket.join('lobby');
+      socket.emit('updatechat', 'SERVER', ' dołączyłeś/aś. Twoje ID: '+ clientid );
+      socket.broadcast.to("lobby").emit('updatechat', 'SERVER', username + ' dołączył/a.');
+      io.sockets.emit('updateusers', usernames);
+      socket.emit('updaterooms', rooms, 'lobby', username);
   });
 
   socket.on('sendchat', function (data) {

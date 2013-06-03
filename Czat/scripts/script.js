@@ -39,6 +39,38 @@
       return year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
     }
     */
+    /*
+    var timerId // current timer if started
+ 
+    function clockStart() { 
+      if (timerId) return
+      timerId = setInterval(update, 1000)
+      update()  // (*)
+    }
+ 
+    function clockStop() {
+      clearInterval(timerId)
+      timerId = null
+    }
+    function update() {
+      var h = new Date().getHours();
+      var m = new Date().getMinutes();
+      var s = new Date().getSeconds();
+      $('#zegar').empty();
+      $('#zegar').append('<b>'+h+':'+m+':'+s+'</b>');
+    }
+*/
+
+    setInterval(function() { 
+        var h = new Date().getHours();
+        h = (h < 10 ? "0" : "") + h;
+        var m = new Date().getMinutes();
+        m = (m < 10 ? "0" : "") + m;
+        var s = new Date().getSeconds();
+        s = (s < 10 ? "0" : "") + s;
+        $('#zegar').empty();
+        $('#zegar').append('<b>'+h+':'+m+':'+s+'</b>');
+      }, 1000);
 
   socket.on('connect', function(){
     socket.emit('adduser', 
@@ -49,8 +81,11 @@
 
   socket.on('updatechat', function (username, data) {
     var godzina = new Date().getHours();
+    godzina = (godzina < 10 ? "0" : "") + godzina;
     var minuta = new Date().getMinutes();
+    minuta = (minuta < 10 ? "0" : "") + minuta;
     var sekunda = new Date().getSeconds();
+    sekunda = (sekunda < 10 ? "0" : "") + sekunda;
     //var odszyfrowane = Decrypt(data);
     $('#rozmowa').append('<b>'+'&nbsp'+username+':</b>'+'&nbsp'+data+"&nbsp &nbsp &nbsp &nbsp"+godzina+':'+minuta+':'+sekunda+'<br>');
 
@@ -64,8 +99,9 @@
     $('#users').empty();
     $.each(data, function(key, value) {
       //$('#users').append('<div>' + key + '</div>');
-      $('#users').append('<div><a href="#" onclick="zapros(\''+key+'\')"> ' + key + ' </a></div>');
+      $('#users').append('<div><a href="#" onclick="zapros(\''+key+'\')">' + key + ' </a></div>');
     });
+    $('#users div:odd').remove();
   });
 
   socket.on('updaterooms', function(rooms, current_room, username) {
@@ -85,6 +121,9 @@
 
   function switchRoom(room){
     socket.emit('switchRoom', room);
+  }
+  function zapros(key){
+    socket.emit('zapros', key);
   }
 
   $(function(){
