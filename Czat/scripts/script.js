@@ -1,5 +1,4 @@
-
-  var socket = io.connect('http://localhost:1234');
+  var socket = io.connect('https://localhost:1234', {secure: true});
 
   var emotikonki = {
     smile1: ':-)',
@@ -11,8 +10,6 @@
     scared1: ':-o',
     scared2: ':o'    
   };
-
-
 
   function oknoPrompt() {
     var nick = prompt('Podaj swój nick:', 'Anonim');
@@ -54,8 +51,8 @@
     var godzina = new Date().getHours();
     var minuta = new Date().getMinutes();
     var sekunda = new Date().getSeconds();
-    var odszyfrowane = Decrypt(data);
-    $('#rozmowa').append('<b>'+'&nbsp'+username+':</b>'+'&nbsp'+odszyfrowane+"&nbsp &nbsp &nbsp &nbsp"+godzina+':'+minuta+':'+sekunda+'<br>');
+    //var odszyfrowane = Decrypt(data);
+    $('#rozmowa').append('<b>'+'&nbsp'+username+':</b>'+'&nbsp'+data+"&nbsp &nbsp &nbsp &nbsp"+godzina+':'+minuta+':'+sekunda+'<br>');
 
      //wstawianie emotikonek
         var zamiana = $("#rozmowa").html().replace(emotikonki.smile1,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-smile.svg" width="30" height="30" border="0"/>').replace(emotikonki.smile2,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-smile.svg" width="30" height="30" border="0"/>').replace(emotikonki.sad1,'<img src="http://upload.wikimedia.org/wikipedia/commons/0/06/Face-sad.svg" width="30" height="30" border="0"/>').replace(emotikonki.sad2,'<img src="http://upload.wikimedia.org/wikipedia/commons/0/06/Face-sad.svg" width="30" height="30" border="0"/>').replace(emotikonki.scared1,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-surprise.svg" width="30" height="30" border="0"/>').replace(emotikonki.scared2,'<img src="http://upload.wikimedia.org/wikipedia/commons/7/79/Face-surprise.svg" width="30" height="30" border="0"/>').replace(emotikonki.wink1,'<img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="30" height="30" border="0"/>').replace(emotikonki.wink2,'<img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="30" height="30" border="0"/>');
@@ -101,13 +98,14 @@
       */
       var message = $('#data').val();
       $('#data').val('');
-      socket.emit('sendchat', Encrypt(message));
+      socket.emit('sendchat', message);
       $('#data').focus();
     });
 
     $('#dodaj_pokoj').click(function(){
       var wartosc = $('input[id=pokoj]').val();
-      socket.emit('addroom', wartosc);
+      var username = socket.username;
+      socket.emit('addroom', wartosc, username);
       //return wartosc;
     });
 

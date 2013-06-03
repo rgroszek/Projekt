@@ -1,10 +1,28 @@
 var express = require('express')
   , app = express()
-  , http = require('http')
+  , httpapp = express()
+  , fs = require("fs")
+  , klucz_prywatny = fs.readFileSync("privatekey.pem").toString()
+  , certyfikat = fs.readFileSync("certificate.pem").toString()
+  , opcjeHTTPS = { key: klucz_prywatny, cert: certyfikat, requestCert: true}
+  //, http = require('http')
+  //, https = require('https')
   , cookie = require('cookie')
   , connect = require('connect')
-  , server = http.createServer(app)
+  //, server = http.createServer(app)
+  //, io = require('socket.io').listen(httpss);
+  , http = require('http').createServer(httpapp)
+  , server = require('https').createServer(opcjeHTTPS, app)  
   , io = require('socket.io').listen(server);
+
+httpapp.get('*',function(req,res){  
+    res.redirect('https://localhost:1234'+req.url)
+})
+
+server.listen(1234);
+http.listen(12345);
+
+//klucze prywatne i publiczne !!! zabezpieczenie klucza prywatnego
 
 
 // Configure Express app with:
@@ -14,7 +32,6 @@ app.configure(function () {
     app.use(express.cookieParser());
     app.use(express.session({secret: 'secret', key: 'express.sid'}));
   });
-
 
 app.get('/scripts/:url[.js]', function (req, res) {
     res.sendfile(__dirname + req.url);
@@ -26,10 +43,25 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-server.listen(1234, function() {
-  console.log('Serwer wystartował na porcie 1234 !!!!!!!!!!!!!!!!!!!!!!!');
+
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! HTTPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/*
+var httpss = https.createServer(opcjeHTTPS, app).listen(1234, function () {
+console.log("Serwer nasłuchuje na szyfrowanym porcie 1234");
 });
+
+
+app.get('*',function(req,res){  
+    res.redirect('https://localhost:1234'+req.url)
+})
+*/
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! HTTPS  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//server.listen(1234, function() {
+  //console.log('Serwer wystartował na porcie 1234 !!!!!!!!!!!!!!!!!!!!!!!');
+//});
 //AUTORYZACJA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 io.set('authorization', function (handshakeData, accept) {
     // check if there's a cookie header
     if (handshakeData.headers.cookie) {
@@ -51,11 +83,13 @@ io.set('authorization', function (handshakeData, accept) {
     } 
     // accept the incoming connection
     accept(null, true);
-}); 
+});
+ 
 //KONIEC AUTORYZACJI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/*
 function Encrypt(dane){
   var actual = dane;
-  var key = 10; //Any integer value
+  var key = 100; //Any integer value
   var result = "";
   for(i=0; i<actual.length;i++){
     result += String.fromCharCode(key^actual.charCodeAt(i));
@@ -63,15 +97,17 @@ function Encrypt(dane){
   //alert(result);
   return result;
 }
+
 function Decrypt(dane){
   var actual= dane;
-  var key = 10; //Any integer value
+  var key = 100; //Any integer value
   var result="";    
   for(i=0; i<actual.length; i++){
     result += String.fromCharCode(key^actual.charCodeAt(i));
   }
   return result;
 }
+*/
 // nazwy uzytkownikow 
 var usernames = {};
 //pokoje
@@ -79,9 +115,10 @@ var rooms = ['lobby','dzienny','nocny'];
 
 io.sockets.on('connection', function (socket) {
 
-  socket.on('addroom', function(wartosc){
+  socket.on('addroom', function(wartosc, username){
     rooms.push(wartosc);
-    socket.username = username;
+    //socket.username = username;
+    //socket.emit('updaterooms', rooms, wartosc, username);
     socket.emit('updaterooms', rooms, wartosc, username);
   });
 
@@ -97,8 +134,8 @@ io.sockets.on('connection', function (socket) {
     socket.room = 'lobby';
     usernames[username] = username;
     socket.join('lobby');
-    socket.emit('updatechat', 'SERVER', Encrypt(' dołączyłeś/aś.'));
-    socket.broadcast.to("lobby").emit('updatechat', 'SERVER', Encrypt(username) + Encrypt(' dołączył/a.'));
+    socket.emit('updatechat', 'SERVER', ' dołączyłeś/aś.');
+    socket.broadcast.to("lobby").emit('updatechat', 'SERVER', username + ' dołączył/a.');
     io.sockets.emit('updateusers', usernames);
     socket.emit('updaterooms', rooms, 'lobby', username);
   });
@@ -110,16 +147,16 @@ io.sockets.on('connection', function (socket) {
   socket.on('switchRoom', function(newroom){
     socket.leave(socket.room);
     socket.join(newroom);
-    socket.emit('updatechat', 'SERVER', Encrypt('dolaczyles do ')+ Encrypt(newroom));
-    socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', Encrypt(socket.username) + Encrypt(' opuscil pokoj'));
+    socket.emit('updatechat', 'SERVER', 'dolaczyles do '+ newroom);
+    socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username + ' opuscil pokoj');
     socket.room = newroom;
-    socket.broadcast.to(newroom).emit('updatechat', 'SERVER', Encrypt(socket.username)+Encrypt(' dołączył/a do tego stołu'));
+    socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' dołączył/a do tego stołu');
     socket.emit('updaterooms', rooms, newroom, socket.username);
   });
 
   socket.on('disconnect', function(){
     io.sockets.emit('updateusers', usernames);
-    socket.broadcast.emit('updatechat', 'SERVER', Encrypt(socket.username) + Encrypt(' rozłączył/a się.'));
+    socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' rozłączył/a się.');
     socket.leave(socket.room);
     delete usernames[socket.username];
   });

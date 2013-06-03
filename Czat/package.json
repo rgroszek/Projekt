@@ -6,6 +6,7 @@
         "express": "3.x",
         "socket.io": "*",
 		"connect": "*",
-		"cookie": "*"
+		"cookie": "*",
+		"simple_rsa_encrypt": "*"
      }
 }

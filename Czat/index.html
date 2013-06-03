@@ -8,9 +8,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
     <script type="text/javascript" src="scripts/script.js"></script> 
     <script type="text/javascript">
+
       function Encrypt(dane){
           var actual = dane;
-          var key = 10; //Any integer value
+          var key = 100; //Any integer value
           var result = "";
           for(i=0; i<actual.length;i++){
             result += String.fromCharCode(key^actual.charCodeAt(i));
@@ -21,7 +22,7 @@
 
       function Decrypt(dane){
           var actual= dane;
-          var key = 10; //Any integer value
+          var key = 100; //Any integer value
           var result="";    
           for(i=0; i<actual.length; i++){
             result += String.fromCharCode(key^actual.charCodeAt(i));
@@ -40,8 +41,6 @@
    <div id="aktualny_pokoj"></div>
     <div id="zalogowani">
       <b>Zalogowani użytkownicy:</b>
-      <input id="zaproszenie" style="width:70px;" />
-      <input type="button" id="przycisk_zaproszenie" value="Zaproś" />
       <div id="users"></div>
     </div>
     <div id="pokoje">
